@@ -1,0 +1,198 @@
+
+<h2 class="sr-only">Student lifestyle dashboard showing GPA, stress, study hours, sleep, and activity data for 2,000 students</h2>
+
+<style>
+  .dash { font-family: var(--font-sans); padding: 1rem 0; }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin: 1.5rem 0 0.75rem; }
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 1rem; }
+  .metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.85rem 1rem; }
+  .metric-label { font-size: 12px; color: var(--color-text-secondary); margin: 0 0 4px; }
+  .metric-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin: 0; }
+  .metric-sub { font-size: 11px; color: var(--color-text-tertiary); margin: 2px 0 0; }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1.5rem; }
+  .chart-box { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .chart-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 12px; }
+  .chart-full { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-text-secondary); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .insight { font-size: 12px; color: var(--color-text-secondary); margin: 8px 0 0; border-left: 2px solid var(--color-border-secondary); padding-left: 8px; }
+  @media (max-width: 500px) { .chart-row { grid-template-columns: 1fr; } }
+</style>
+
+<div class="dash">
+
+  <p class="section-title">Overview — 2,000 students</p>
+  <div class="metric-grid">
+    <div class="metric"><p class="metric-label">Avg GPA</p><p class="metric-value">3.12</p><p class="metric-sub">range 2.2 – 4.0</p></div>
+    <div class="metric"><p class="metric-label">Avg study</p><p class="metric-value">7.5h</p><p class="metric-sub">per day</p></div>
+    <div class="metric"><p class="metric-label">Avg sleep</p><p class="metric-value">7.5h</p><p class="metric-sub">per day</p></div>
+    <div class="metric"><p class="metric-label">Avg activity</p><p class="metric-value">4.3h</p><p class="metric-sub">physical / day</p></div>
+    <div class="metric"><p class="metric-label">High stress</p><p class="metric-value">51.5%</p><p class="metric-sub">of all students</p></div>
+  </div>
+
+  <p class="section-title">Stress level &amp; GPA performance</p>
+  <div class="chart-row">
+    <div class="chart-box">
+      <p class="chart-title">Stress distribution</p>
+      <div style="position:relative;height:180px;"><canvas id="stressChart" role="img" aria-label="Donut chart: High 51.5%, Moderate 33.7%, Low 14.9%">High 51.5%, Moderate 33.7%, Low 14.9%</canvas></div>
+      <div class="legend" style="margin-top:10px;">
+        <span class="legend-item"><span class="legend-dot" style="background:#D85A30"></span>High 51.5%</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#BA7517"></span>Moderate 33.7%</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>Low 14.9%</span>
+      </div>
+    </div>
+    <div class="chart-box">
+      <p class="chart-title">Avg GPA by stress level</p>
+      <div style="position:relative;height:180px;"><canvas id="gpaStressChart" role="img" aria-label="Bar chart: High stress GPA 3.26, Moderate 3.03, Low 2.82">High 3.26, Moderate 3.03, Low 2.82</canvas></div>
+      <p class="insight">Higher stress correlates with higher GPA — driven by more study hours (8.4 h vs 5.5 h for Low).</p>
+    </div>
+  </div>
+
+  <p class="section-title">Study hours — the strongest GPA predictor (r = 0.73)</p>
+  <div class="chart-full">
+    <p class="chart-title">Avg GPA by daily study hours (banded)</p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#3266ad"></span>Avg GPA</span>
+    </div>
+    <div style="position:relative;height:200px;"><canvas id="studyGpaChart" role="img" aria-label="Bar chart of avg GPA across study hour bands from under 6h to 10h">Study hours vs GPA</canvas></div>
+    <p class="insight">Students studying ≥ 9 h/day average 3.41 GPA vs 2.72 for those under 6 h. Pearson r = 0.73 — study time is by far the strongest single predictor in the dataset.</p>
+  </div>
+
+  <p class="section-title">Sleep &amp; physical activity</p>
+  <div class="chart-row">
+    <div class="chart-box">
+      <p class="chart-title">GPA across sleep bands</p>
+      <div style="position:relative;height:190px;"><canvas id="sleepGpaChart" role="img" aria-label="Bar chart of avg GPA by sleep hours, all bands close to 3.12">Sleep vs GPA flat</canvas></div>
+      <p class="insight">GPA is nearly flat across all sleep bands — sleep quantity alone does not predict grades.</p>
+    </div>
+    <div class="chart-box">
+      <p class="chart-title">Avg physical activity by stress</p>
+      <div style="position:relative;height:190px;"><canvas id="physStressChart" role="img" aria-label="Bar: Low stress 5.58h, Moderate 4.34h, High 3.96h physical activity">Low 5.58h, Moderate 4.34h, High 3.96h</canvas></div>
+      <p class="insight">Low-stress students exercise 41% more than High-stress peers — physical activity appears to be a key stress buffer.</p>
+    </div>
+  </div>
+
+  <p class="section-title">Daily hour budget (avg across all students)</p>
+  <div class="chart-full">
+    <p class="chart-title">How students allocate their day</p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#3266ad"></span>Study</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#534AB7"></span>Sleep</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>Physical</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#BA7517"></span>Social</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#D85A30"></span>Extracurricular</span>
+    </div>
+    <div style="position:relative;height:60px;"><canvas id="budgetChart" role="img" aria-label="Horizontal stacked bar: Study 7.48h, Sleep 7.50h, Physical 4.33h, Social 2.70h, Extracurricular 1.99h">Study 7.48h, Sleep 7.50h, Physical 4.33h, Social 2.70h, Extracurricular 1.99h</canvas></div>
+    <p class="insight">Study + Sleep consume ~15 h of the day. The remaining ~9 h split between physical activity (4.3 h), social (2.7 h), and extracurriculars (2.0 h). Total tracked = 24 h — a very tight schedule.</p>
+  </div>
+
+  <p class="section-title">GPA distribution</p>
+  <div class="chart-full">
+    <p class="chart-title">Number of students per GPA band</p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#534AB7"></span>A (3.5–4.0)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#3266ad"></span>B+ (3.0–3.49)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#BA7517"></span>B- (2.5–2.99)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#D85A30"></span>C (&lt;2.5)</span>
+    </div>
+    <div style="position:relative;height:180px;"><canvas id="gpaDistChart" role="img" aria-label="Bar chart: A 221 students, B+ 1067, B- 681, C 31">A 221, B+ 1067, B- 681, C 31</canvas></div>
+    <p class="insight">64% of students cluster in the B+ band (3.0–3.49). Only 31 students fall below 2.5 — this is a high-achieving cohort overall.</p>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const textColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)';
+const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
+
+const baseOpts = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: { callbacks: {} } },
+  scales: {
+    x: { ticks: { color: textColor, font: { size: 11 } }, grid: { color: gridColor } },
+    y: { ticks: { color: textColor, font: { size: 11 } }, grid: { color: gridColor } }
+  }
+};
+
+new Chart(document.getElementById('stressChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['High','Moderate','Low'],
+    datasets: [{ data: [1029,674,297], backgroundColor: ['#D85A30','#BA7517','#1D9E75'], borderWidth: 0 }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '65%' }
+});
+
+new Chart(document.getElementById('gpaStressChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Low','Moderate','High'],
+    datasets: [{ data: [2.817, 3.025, 3.262], backgroundColor: ['#1D9E75','#BA7517','#D85A30'], borderRadius: 4, borderSkipped: false }]
+  },
+  options: { ...baseOpts, scales: { x: baseOpts.scales.x, y: { ...baseOpts.scales.y, min: 2.5, max: 3.5, ticks: { color: textColor, font: { size: 11 } }, grid: { color: gridColor } } } }
+});
+
+new Chart(document.getElementById('studyGpaChart'), {
+  type: 'bar',
+  data: {
+    labels: ['< 6h','6–7h','7–8h','8–9h','≥ 9h'],
+    datasets: [{ data: [2.72, 2.89, 3.09, 3.26, 3.41], backgroundColor: '#3266ad', borderRadius: 4, borderSkipped: false }]
+  },
+  options: { ...baseOpts, scales: { x: baseOpts.scales.x, y: { ...baseOpts.scales.y, min: 2.5, max: 3.6, ticks: { color: textColor, font: { size: 11 }, callback: v => v.toFixed(2) }, grid: { color: gridColor } } } }
+});
+
+new Chart(document.getElementById('sleepGpaChart'), {
+  type: 'bar',
+  data: {
+    labels: ['< 6h','6–7h','7–8h','8–9h','9h+'],
+    datasets: [{ data: [3.112, 3.109, 3.129, 3.133, 3.098], backgroundColor: '#534AB7', borderRadius: 4, borderSkipped: false }]
+  },
+  options: { ...baseOpts, scales: { x: baseOpts.scales.x, y: { ...baseOpts.scales.y, min: 2.9, max: 3.3, ticks: { color: textColor, font: { size: 11 }, callback: v => v.toFixed(2) }, grid: { color: gridColor } } } }
+});
+
+new Chart(document.getElementById('physStressChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Low','Moderate','High'],
+    datasets: [{ data: [5.58, 4.34, 3.96], backgroundColor: ['#1D9E75','#BA7517','#D85A30'], borderRadius: 4, borderSkipped: false }]
+  },
+  options: { ...baseOpts, scales: { x: baseOpts.scales.x, y: { ...baseOpts.scales.y, min: 0, ticks: { color: textColor, font: { size: 11 }, callback: v => v + 'h' }, grid: { color: gridColor } } } }
+});
+
+new Chart(document.getElementById('budgetChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Daily hours'],
+    datasets: [
+      { label: 'Study', data: [7.48], backgroundColor: '#3266ad' },
+      { label: 'Sleep', data: [7.50], backgroundColor: '#534AB7' },
+      { label: 'Physical', data: [4.33], backgroundColor: '#1D9E75' },
+      { label: 'Social', data: [2.70], backgroundColor: '#BA7517' },
+      { label: 'Extracurricular', data: [1.99], backgroundColor: '#D85A30' }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { mode: 'index' } },
+    scales: {
+      x: { stacked: true, ticks: { color: textColor, font: { size: 11 }, callback: v => v + 'h' }, grid: { color: gridColor } },
+      y: { stacked: true, ticks: { display: false }, grid: { display: false } }
+    }
+  }
+});
+
+new Chart(document.getElementById('gpaDistChart'), {
+  type: 'bar',
+  data: {
+    labels: ['A (3.5–4.0)','B+ (3.0–3.49)','B- (2.5–2.99)','C (< 2.5)'],
+    datasets: [{ data: [221,1067,681,31], backgroundColor: ['#534AB7','#3266ad','#BA7517','#D85A30'], borderRadius: 4, borderSkipped: false }]
+  },
+  options: { ...baseOpts }
+});
+</script>
